@@ -10,11 +10,26 @@ import message
 # double check all of the dates, make sure search bar goes all places, reminder to update phone number every so often
 signUp = True
 
-driver = webdriver.Chrome()
-driver.get("https://www.mindbodyonline.com/explore/")
 
+def loginAndRegister(_class, hour, day):
+    location = " "
+    driver = webdriver.Chrome()
+    driver.get("https://www.mindbodyonline.com/explore/")
+    time.sleep(10)
 
-def login():
+    '''while location != driver.find_element(  
+                By.CLASS_NAME, "input[value='Seattle, WA, US']"):
+        try:
+            location = driver.find_element(  
+                By.CLASS_NAME, "input[value='Seattle, WA, US']")
+        except:
+            driver.quit()
+            driver = webdriver.Chrome()
+            driver.get("https://www.mindbodyonline.com/explore/")
+
+            location = driver.find_element(  
+                By.CLASS_NAME, "input[value='Seattle, WA, US']")'''
+
     # Open login screen
     time.sleep(2)
     classes_button = driver.find_element(By.XPATH, "//button[text()='Login']")
@@ -54,6 +69,7 @@ def login():
     time.sleep(2)
     location.send_keys(Keys.ENTER)
     time.sleep(3)
+    print(location)
 
     # Search
     search = driver.find_element(
@@ -67,8 +83,6 @@ def login():
     drivePage.click()
     time.sleep(3)
 
-
-def register(_class, hour, day):
     classes_button = driver.find_element(
         By.XPATH, "//button[text()='Classes']")
     classes_button.click()
@@ -114,9 +128,11 @@ def register(_class, hour, day):
                 _class + " at " + hour + ' on ' + day + ".")
 
 
-login()
-register("POWER", "8:30 - 9:45", "Sat")
-# navigate to tuesday
+loginAndRegister("POWER", "8:30 - 9:45", "Sat")
+
+# login()
+# register("POWER", "8:30 - 9:45", "Sat")
+# navigate to tuesdayS
 
 # step 1: switch dates
 # step 2: find class
@@ -127,28 +143,34 @@ register("POWER", "8:30 - 9:45", "Sat")
 # when message is received it will say don't scheduale classes for this date/these dates
 # Then the system will make signUp false (5 days before) until 5 days before the end date
 # It knows what the date is, so use real date input from the text
-if signUp == True:
-    try:
-        schedule.every().thursday.at("06:00:00").do(  # add login
-            register, "PHASE16", "6:00 - 6:55", "Tue")
+# while signUp == True:
+# try:
 
-        schedule.every().saturday.at("06:30:00").do(login)
-        schedule.every().saturday.at("06:30:00").do(
-            register, "SHRED", "6:30 - 7:25", "Thu")
+schedule.every().wednesday.at("14:39:00").do(
+    loginAndRegister, "PHASE16", "6:00 - 6:55", "Tue")
 
-        schedule.every().sunday.at("06:15:00").do(login)
-        schedule.every().sunday.at("06:15:00").do(
-            register, "LIFT", "6:15 - 7:10", "Fri")
+schedule.every().saturday.at("06:30:00").do(
+    loginAndRegister, "SHRED", "6:30 - 7:25", "Thu")
 
-        schedule.every().monday.at("08:30:00").do(login)
-        schedule.every().monday.at("08:30:00").do(
-            register, "POWER", "8:30 - 9:45", "Sat")
-    except:
-        sendMessage(
-            "There was an error so you have not been signed up for class in 5 days")
+schedule.every().sunday.at("06:15:00").do(
+    loginAndRegister, "LIFT", "6:15 - 7:10", "Fri")
 
-# while True:
-# schedule.run_pending()
-# time.sleep(1)
+schedule.every().monday.at("08:30:00").do(
+    loginAndRegister, "POWER", "8:30 - 9:45", "Sat")
 
-driver.quit()  # for now
+# except:
+# login()
+# sendMessage(
+#    "There was an error so you have not been signed up for class in 5 days")
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
+
+    # receive email
+    # take the date 5 days before as doNotRunDate
+    # If day == doNotRunDate, don't call any functions
+    # else call as normal
+    # updatable based on email input
+
+# driver.quit()  # for now

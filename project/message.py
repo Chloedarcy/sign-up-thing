@@ -16,4 +16,6 @@ def sendMessage(text):
         to='+16032757875'  # Your phone number
     )
 
+
+# sendMessage('hi')
 # go to verified called IDs and add moms number
