@@ -22,11 +22,9 @@ def readEmail():
     with MailBox("imap.gmail.com").login(email_sender, email_password, initial_folder="DRIVE") as mailbox:
         unseen_emails = list(mailbox.fetch("UNSEEN"))
         if unseen_emails:
-            latest_email = unseen_emails[-1]
-            skipDates = latest_email.text
+            skipDates = unseen_emails[-1].text
             # send format 2023-07-02
             calcSkipDates(skipDates)
-            print(dontSignUpTime)
             return dontSignUpTime
 
 
@@ -37,8 +35,6 @@ def calcSkipDates(skipDates):
     skipDates = datetime.strptime(skipDates, "%Y-%m-%d")
     dontSignUpTime = skipDates - timedelta(days=5)
     dontSignUpTime = str(dontSignUpTime).rstrip('00:00:00')
-    dontSignUpTime = "Current Date: " + dontSignUpTime
-    return dontSignUpTime
 
 
 def sendEmail(subject, body):
