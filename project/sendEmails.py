@@ -12,29 +12,30 @@ email_sender = "chloedarcy2007@gmail.com"
 email_password = "jcheknyjdpehptjy"
 email_receiver = "chloedarcy2007@gmail.com"  # change
 
-dontSignUpTime = None
-skipDates = None
+skipDateStart = None
+skipDateEnd = None
 
 
 def readEmail():
     global dontSignUpTime
-    global skipDates
+    global skipDateStart
+    global skipDatesEnd
     with MailBox("imap.gmail.com").login(email_sender, email_password, initial_folder="DRIVE") as mailbox:
         unseen_emails = list(mailbox.fetch("UNSEEN"))
         if unseen_emails:
-            skipDates = unseen_emails[-1].text
-            # send format 2023-07-02
-            calcSkipDates(skipDates)
-            return dontSignUpTime
+            messageBody = unseen_emails[-1].text
+            # send format 2023-07-02 until 2023-07-10
+            calcSkipDates(messageBody[10:], messageBody[:10])
+            return skipDateStart, skipDatesEnd
 
 
-def calcSkipDates(skipDates):
+def calcSkipDates(skipDateStart, skipDateEnd):
     global dontSignUpTime
 
-    skipDates = skipDates[:10]
-    skipDates = datetime.strptime(skipDates, "%Y-%m-%d")
-    dontSignUpTime = skipDates - timedelta(days=5)
-    dontSignUpTime = str(dontSignUpTime).rstrip('00:00:00')
+    skipDateStart = str((datetime.strptime(
+        skipDateStart, "%Y-%m-%d")) - timedelta(days=5)).rstrip('00:00:00')
+    skipDateEnd = str((datetime.strptime(skipDateEnd, "%Y-%m-%d")
+                       ) - timedelta(days=5)).rstrip('00:00:00')
 
 
 def sendEmail(subject, body):
