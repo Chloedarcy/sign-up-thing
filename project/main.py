@@ -163,31 +163,19 @@ schedule.every().sunday.at("06:15:00").do(
 schedule.every().monday.at("08:30:00").do(
     loginAndRegister, "POWER", "8:30 - 9:45", "Sat")
 
-readEmail()
-print(dontSignUpTime)
-print(current_date)
-
 while True:
     if dontSignUpTime == None:
         schedule.run_pending()
-        readEmail()
+        dontSignUpTime = readEmail()
         time.sleep(1)
-        print(dontSignUpTime)
-        print(current_date)
     else:
         print("you are in don't sign up for classes mode")
-        print(dontSignUpTime)
-        print(current_date)
-        while dontSignUpTime == current_date:
-            print('NO')
+        time.sleep(1)
+        # check current_date updates here
+        while dontSignUpTime[:10] == current_date[:10]:
             readEmail()
-        # dontSignUpTime = None
+            time.sleep(1)
+        dontSignUpTime = None
 
 
-# receive email
-# take the date 5 days before as doNotRunDate
-# If day == doNotRunDate, don't call any functions
-# else call as normal
-# updatable based on email input
-
-# driver.quit()  # for now
+# driver.quit()
