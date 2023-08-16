@@ -14,28 +14,51 @@ email_receiver = "chloedarcy2007@gmail.com"  # change
 
 skipDateStart = None
 skipDateEnd = None
+dontSignUpTime = []
+middleDay = None
 
 
 def readEmail():
     global dontSignUpTime
     global skipDateStart
-    global skipDatesEnd
+    global skipDateEnd
+    global messageBody
     with MailBox("imap.gmail.com").login(email_sender, email_password, initial_folder="DRIVE") as mailbox:
         unseen_emails = list(mailbox.fetch("UNSEEN"))
         if unseen_emails:
             messageBody = unseen_emails[-1].text
             # send format 2023-07-02 until 2023-07-10
-            calcSkipDates(messageBody[10:], messageBody[:10])
-            return skipDateStart, skipDatesEnd
+            calcSkipDates(messageBody[:10], messageBody[-12:-2])
+            return dontSignUpTime
+        else:
+            return []
 
 
-def calcSkipDates(skipDateStart, skipDateEnd):
+def calcSkipDates(skip_date_start, skip_date_end):
     global dontSignUpTime
 
-    skipDateStart = str((datetime.strptime(
-        skipDateStart, "%Y-%m-%d")) - timedelta(days=5)).rstrip('00:00:00')
-    skipDateEnd = str((datetime.strptime(skipDateEnd, "%Y-%m-%d")
-                       ) - timedelta(days=5)).rstrip('00:00:00')
+    skipDateStart = datetime.strptime(skip_date_start, "%Y-%m-%d")
+    skipDateEnd = datetime.strptime(skip_date_end, "%Y-%m-%d")
+    skipDateStart -= timedelta(days=6)
+    skipDateEnd -= timedelta(days=5)
+
+    dontSignUpTime.append(str(skipDateStart))
+
+    days = (skipDateEnd - skipDateStart).days
+    middleDay = skipDateStart
+
+    if days > 1:  # i think 1
+        for i in range(days - 1):
+            middleDay += timedelta(days=1)
+            dontSignUpTime.append(str(middleDay))
+
+    dontSignUpTime.append(str(skipDateEnd))
+
+    for i in range(len(dontSignUpTime)):
+        dontSignUpTime[i] = dontSignUpTime[i].replace(' 00:00:00', '')
+
+
+readEmail()
 
 
 def sendEmail(subject, body):
