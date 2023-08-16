@@ -7,6 +7,8 @@ from message import *
 from selenium.webdriver.common.keys import Keys
 import schedule
 from sendEmails import *
+from selenium import webdriver
+from selenium.webdriver.common.by import By
 
 # double check all of the dates, make sure search bar goes all places
 signUp = True
@@ -17,8 +19,15 @@ def loginAndRegister(_class, hour, day):  # put the whole thing in a try loop? a
     while done == False:
         try:
             location = " "
-            driver = webdriver.Chrome()
+
+            options = webdriver.ChromeOptions()
+            options.add_argument('--headless')
+            driver = webdriver.Chrome("path/to/chromedriver.exe",
+                                      options=options)
             driver.get("https://www.mindbodyonline.com/explore/")
+
+            # driver = webdriver.Chrome()
+            # driver.get("https://www.mindbodyonline.com/explore/")
             time.sleep(7)
 
             # Open login screen
@@ -67,7 +76,8 @@ def loginAndRegister(_class, hour, day):  # put the whole thing in a try loop? a
 
             done = True
         except:
-            print("trying login again")
+            print("trying login again")  # this doesnt actually run it again
+            time.sleep(2)
 
         try:
             # Search
@@ -125,31 +135,10 @@ def loginAndRegister(_class, hour, day):  # put the whole thing in a try loop? a
                       _class + " at " + hour + ' on ' + day + ".")
         except:
             print("there was an error signing up")
-
-# loginAndRegister("PHASE16", "8:45 - 9:40", "Tue")
-# login()
-# register("POWER", "8:30 - 9:45", "Sat")
-# navigate to tuesday
-
-# step 1: switch dates
-# step 2: find class
-# step 3: sign up for class
-
-# put these in if signUp is true: then execute
-# If messaged received to not sign up for whatever time, make it false for that one
-# when message is received it will say don't scheduale classes for this date/these dates
-# Then the system will make signUp false (5 days before) until 5 days before the end date
-# It knows what the date is, so use real date input from the text
-# while signUp == True:
-# try:
+            time.sleep(2)
 
 
 current_date = time.strftime("%Y-%m-%d", time.localtime())
-print("Current Date:", current_date)
-# date 5 days before skip date
-
-schedule.every().sunday.at("22:45:00").do(
-    loginAndRegister, "PHASE16", "6:00 - 6:55", "Tue")
 
 schedule.every().thursday.at("06:00:00").do(
     loginAndRegister, "PHASE16", "6:00 - 6:55", "Tue")
@@ -163,19 +152,22 @@ schedule.every().sunday.at("06:15:00").do(
 schedule.every().monday.at("08:30:00").do(
     loginAndRegister, "POWER", "8:30 - 9:45", "Sat")
 
-while True:
-    if dontSignUpTime == None:
+while True:  # make sure if emial is sent no overlap
+    if dontSignUpTime == []:
         schedule.run_pending()
         dontSignUpTime = readEmail()
         time.sleep(1)
     else:
-        print("you are in don't sign up for classes mode")
+        print("you are in dont sign up time mode")
         time.sleep(1)
-        # check current_date updates here
-        while dontSignUpTime[:10] == current_date[:10]:
-            readEmail()
-            time.sleep(1)
-        dontSignUpTime = None
+
+        for day in range(len(dontSignUpTime)):
+            print(dontSignUpTime[day])
+            # this works, make sure dontsignuptime is correct
+            while dontSignUpTime[day] == current_date:
+                readEmail()
+                time.sleep(1)
+        dontSignUpTime = []
 
 
 # driver.quit()
